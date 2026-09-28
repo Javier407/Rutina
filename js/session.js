@@ -57,6 +57,7 @@ window.SESION = (function () {
   }
   function hide() {
     if (!root) return;
+    stopHype();
     root.hidden = true; document.body.classList.remove("in-session");
     clearInterval(loop); loop = null;
     if (wake) { wake.release().catch(() => {}); wake = null; }
@@ -110,17 +111,12 @@ window.SESION = (function () {
     if (rest > 0) { st.phase = "rest"; st.restTotal = rest; st.restEnd = Date.now() + rest * 1000; cues = {}; }
     else st.phase = "work";
     save(); render();
-    // Primero la motivación, luego la información del descanso o del siguiente ejercicio
-    const info = rest > 0 ? V.restPhrase(rest) + (changing ? `. Luego: ${exList(d)[all[next].ex].e.nombre}.` : ".") : null;
-    const hype = window.MOTIVA ? MOTIVA.play(changing ? "ejercicio" : "serie") : Promise.resolve();
-    const step = st.i;
-    hype.then(() => {
-      if (!st || st.i !== step) return;
-      if (info && st.phase === "rest") V.say(info, { queue: true });
-      else if (!info && st.phase === "work") announceWork();
-    });
+    // Primero la información del descanso; el momento motivacional llega al final del descanso
+    st.evento = changing ? "ejercicio" : "serie"; save();
+    if (rest > 0) V.say(V.restPhrase(rest) + (changing ? `. Luego: ${exList(d)[all[next].ex].e.nombre}.` : "."));
+    else announceWork();
   }
-  function endRest() { if (window.MOTIVA) MOTIVA.stop(); st.phase = "work"; st.restEnd = 0; save(); V.go(); announceWork(); render(); }
+  function endRest() { stopHype(); st.phase = "work"; st.restEnd = 0; save(); V.go(); announceWork(); render(); }
   function prev() { if (st.i > 0) { st.i--; st.phase = "work"; holdEnd = 0; save(); render(); } }
   function skipExercise() {
     const all = steps(dayOf(st.dayId)), cur = all[st.i].ex;
@@ -150,6 +146,29 @@ window.SESION = (function () {
     render();
   }
 
+  // ---------- Momento motivacional (video en el centro, resto desenfocado) ----------
+  let hypeStop = null;
+  const hypeWin = () => (window.MOTIVA ? MOTIVA.seconds() : 0);
+  async function startHype() {
+    const d = dayOf(st.dayId), sp = steps(d)[st.i], { e } = exList(d)[sp.ex];
+    const sig = `${e.nombre} · Serie ${sp.s + 1} de ${sp.n}`;
+    let ov = root.querySelector("#sHype");
+    if (!ov) { ov = document.createElement("div"); ov.id = "sHype"; root.appendChild(ov); }
+    ov.innerHTML = `<div class="hype-card"><div class="hype-pill"><span>Empieza en</span><b id="hypeCount">${R.clock(Math.ceil((st.restEnd - Date.now()) / 1000))}</b></div>
+      <div class="hype-stage"></div><div class="hype-next"><small>Siguiente</small><b>${R.esc(sig)}</b></div></div>`;
+    root.classList.add("hyping");
+    const stop = await MOTIVA.hype(st.evento || "serie", ov.querySelector(".hype-stage"), null);
+    if (!root.classList.contains("hyping")) { stop(); return; }   // el descanso terminó mientras cargaba
+    hypeStop = stop;
+  }
+  function stopHype() {
+    if (hypeStop) { hypeStop(); hypeStop = null; }
+    if (window.MOTIVA) MOTIVA.stop();
+    if (!root) return;
+    root.classList.remove("hyping");
+    const ov = root.querySelector("#sHype"); if (ov) ov.remove();
+  }
+
   // ---------- Bucle de tiempo ----------
   function tickLoop() {
     if (!st || !root || root.hidden) return;
@@ -162,8 +181,10 @@ window.SESION = (function () {
       if (big) big.textContent = R.clock(secs);
       if (ring) { const C = +ring.dataset.c; ring.style.strokeDashoffset = C * (1 - Math.max(0, left) / st.restTotal); }
       root.querySelector(".s-rest")?.classList.toggle("urgent", secs <= 10);
-      if (secs <= 10 && secs > 3 && !cues.t10 && st.restTotal >= 20) { cues.t10 = 1; V.say("Quedan diez segundos"); }
+      if (secs <= 10 && secs > hypeWin() + 1 && !cues.t10 && st.restTotal >= 20) { cues.t10 = 1; V.say("Quedan diez segundos"); }
       [3, 2, 1].forEach((n) => { if (secs === n && !cues["b" + n]) { cues["b" + n] = 1; V.tick(); } });
+      const hc = root.querySelector("#hypeCount"); if (hc) hc.textContent = R.clock(secs);
+      if (left <= hypeWin() && left > 0.5 && !cues.hype && window.MOTIVA && MOTIVA.enabled() && st.restTotal > hypeWin() + 2) { cues.hype = 1; startHype(); }
       if (left <= 0) endRest();
     }
     if (holdEnd) {

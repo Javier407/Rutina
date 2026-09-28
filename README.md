@@ -17,10 +17,12 @@ Interfaz oscura y roja para organizar la rutina de 5 días (16:00–18:00): Uppe
 La voz anuncia cada ejercicio, avisa "quedan diez segundos" y pita 3-2-1. Se apaga con 🔊. La pantalla no se apaga durante la sesión.
 
 ### Motivación 🔥
-Al terminar una serie, al cambiar de ejercicio y al finalizar el día suena un grito de motivación. En **Progreso → Motivación**:
-- Sube tus propios clips de audio (mp3/m4a/wav, menos de 3 MB) y elige cuándo suenan. Se guardan solo en tu dispositivo, nunca en GitHub.
-- Si no hay clip para ese momento, suena una frase de gimnasio con bocina de estadio.
-- Modos: clips + frases, solo clips, solo frases o apagado.
+En cada descanso: primero el cronómetro grande y la voz dice cuánto descansar y qué sigue. En los **últimos 6 segundos** (ajustable de 3 a 20) todo se desenfoca y aparece un **video de motivación** en el centro con un contador mini "Empieza en". Al llegar a 0 arranca la siguiente serie.
+
+En **Progreso → Motivación**:
+- Sube tus propios videos (máx. 40 MB) o audios y elige cuándo aparecen: cambio de serie, cambio de ejercicio, final del día o cualquier momento. Se guardan solo en tu dispositivo, nunca en GitHub.
+- Sin video para ese momento: animación con la frase en grande, bocina de estadio y grito.
+- Modos: lo mío + frases, solo lo mío, solo frases y animación, o apagado. Botones para ver una vista previa.
 
 ## Estructura
 ```

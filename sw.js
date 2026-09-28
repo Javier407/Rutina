@@ -1,5 +1,5 @@
 // Service worker: la app funciona sin internet en el gym
-const VERSION = "rutina-v4";
+const VERSION = "rutina-v5";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "css/styles.css",
   "js/data.js", "js/store.js", "js/voice.js", "js/motivation.js", "js/figures.js", "js/session.js", "js/progress.js", "js/app.js",

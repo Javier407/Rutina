@@ -639,3 +639,51 @@ body.in-session .resume-bar { display: none; }
 .mv-clip b { display: block; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mv-clip small { color: var(--muted); font-size: 11.5px; }
 .mv-play { width: 36px; height: 36px; border-radius: 50%; border: 0; background: linear-gradient(135deg, var(--red), var(--red-2)); color: #fff; flex: none; }
+
+/* ---------- Momento motivacional ---------- */
+#session .s-top, #session .s-body { transition: filter .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), opacity .45s; }
+#session.hyping .s-top, #session.hyping .s-body { filter: blur(12px) brightness(.45) saturate(.7); transform: scale(.9); pointer-events: none; }
+#sHype, .hype-demo {
+  position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px;
+  background: radial-gradient(ellipse at center, rgba(255,45,70,.18), transparent 65%);
+  animation: hypeIn .45s cubic-bezier(.2,.8,.2,1);
+}
+.hype-demo { background: rgba(0,0,0,.55); backdrop-filter: blur(12px); cursor: pointer; }
+.hype-demo.out { opacity: 0; transition: opacity .3s; }
+@keyframes hypeIn { from { opacity: 0; transform: scale(.7); } 60% { transform: scale(1.04); } to { opacity: 1; transform: none; } }
+.hype-card { width: min(94vw, 560px); display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.hype-pill {
+  display: inline-flex; align-items: center; gap: 10px; padding: 6px 8px 6px 14px; border-radius: 999px;
+  background: rgba(10,10,14,.85); border: 1px solid rgba(255,45,70,.5); box-shadow: 0 0 24px -6px var(--red-glow);
+  font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700;
+}
+.hype-pill b { font: 700 18px var(--mono); color: #fff; background: var(--red); border-radius: 999px; padding: 3px 12px; letter-spacing: 0; animation: blink 1s infinite; }
+.hype-stage {
+  width: 100%; aspect-ratio: 9 / 12; max-height: 64vh; border-radius: 24px; overflow: hidden; position: relative;
+  background: #000; border: 2px solid rgba(255,45,70,.6);
+  box-shadow: 0 0 0 6px rgba(255,45,70,.08), 0 30px 80px -20px rgba(255,45,70,.7);
+}
+.hype-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hype-next { text-align: center; line-height: 1.25; }
+.hype-next small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--red); font-weight: 700; }
+.hype-next b { font-family: var(--display); font-size: 17px; }
+
+/* Animación de respaldo (sin video) */
+.hype-fx { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 14px; padding: 20px; text-align: center; overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #3a0710, #07070a 70%); }
+.hype-rays { position: absolute; inset: -50%; background: repeating-conic-gradient(from 0deg, rgba(255,45,70,.22) 0 8deg, transparent 8deg 22deg); animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hype-fx::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, transparent 30%, #07070a 75%); }
+.hype-word {
+  position: relative; z-index: 1; font: 800 clamp(34px, 11vw, 64px)/1 var(--display); text-transform: uppercase; letter-spacing: -.02em;
+  color: #fff; text-shadow: 0 0 30px var(--red), 0 0 60px rgba(255,45,70,.6);
+  animation: slam .6s cubic-bezier(.2,1.6,.4,1) both, shake .5s .6s ease-in-out 3;
+}
+@keyframes slam { from { transform: scale(3); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes shake { 25% { transform: translate(-3px, 2px) rotate(-1deg); } 75% { transform: translate(3px, -2px) rotate(1deg); } }
+.hype-sub { position: relative; z-index: 1; color: #fca5b0; font-weight: 600; font-size: 14px; animation: viewIn .5s .5s both; }
+
+.mv-range { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.mv-range input { flex: 1; min-width: 140px; accent-color: var(--red); }
+.mv-range b { font-family: var(--mono); color: #fff; }
+.mv-thumb { width: 44px; height: 58px; object-fit: cover; border-radius: 8px; background: #000; flex: none; cursor: pointer; }
