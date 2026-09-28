@@ -1,0 +1,21 @@
+{
+  "name": "Rutina Estética",
+  "short_name": "Rutina",
+  "description": "Rutina de 5 días basada en evidencia con modo guiado, registro de cargas y progreso.",
+  "lang": "es",
+  "start_url": "./?vista=dia&iniciar=hoy",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07070a",
+  "theme_color": "#07070a",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Entrenar hoy", "url": "./?vista=dia&iniciar=hoy", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Progreso", "url": "./?vista=progreso", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07070a">
+  <title>Rutina Estética</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rutina">
+  <meta name="description" content="Rutina Upper/Lower + PPL de 5 días basada en evidencia, con modo guiado, registro de cargas y progreso.">
+</head>
+<body>
+  <div class="bg" aria-hidden="true"><div class="grid"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+
+  <!-- Degradado reutilizable para anillos -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a6e"/><stop offset="1" stop-color="#b3102a"/></linearGradient></defs>
+  </svg>
+
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>
+        </div>
+        <div>
+          <h1>Rutina Estética</h1>
+          <p class="sub">Upper / Lower + PPL · 5 días · 16:00–18:00 · basada en evidencia</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="live" id="live"><span class="pulse"></span><span id="liveText">—</span></div>
+        <button class="icon-btn" id="voiceBtn" aria-label="Activar o desactivar la voz">🔊</button>
+        <button class="btn install" id="installBtn" hidden>⤓ Instalar app</button>
+      </div>
+    </header>
+
+    <div class="tabs-wrap">
+      <nav class="tabs" role="tablist" id="tabs">
+        <span class="tab-ind" id="tabInd"></span>
+        <button class="tab active" data-view="semana" role="tab">Semana</button>
+        <button class="tab" data-view="dia" role="tab">Ejercicios</button>
+        <button class="tab" data-view="progreso" role="tab">Progreso</button>
+        <button class="tab" data-view="evidencia" role="tab">Evidencia</button>
+      </nav>
+    </div>
+
+    <main>
+      <!-- ============ SEMANA ============ -->
+      <section id="view-semana" class="view active">
+        <div class="stats" id="stats"></div>
+
+        <div class="section-title"><h2>Visualizadores</h2><span>Volumen, balance y tiempo de la semana</span></div>
+        <div class="charts">
+          <div class="chart glass reveal"><h3>Series directas por músculo</h3><p class="cap">Por semana · la línea marca 10 series (umbral de Schoenfeld 2017)</p><div class="bars" id="bars"></div></div>
+          <div class="chart glass radar reveal"><h3>Balance por región</h3><p class="cap">Series semanales por zona del cuerpo</p><div id="radar"></div></div>
+          <div class="chart glass donut reveal"><h3>Distribución del tiempo</h3><p class="cap">600 min semanales por tipo de bloque</p><div id="donut"></div><div class="legend" id="donutLegend"></div></div>
+        </div>
+
+        <div class="section-title"><h2>Calendario</h2><span>Toca un día o un bloque para ver los ejercicios</span></div>
+        <div class="glass calendar-wrap reveal"><div class="calendar" id="calendar"></div></div>
+        <div class="rest-days" id="restDays"></div>
+      </section>
+
+      <!-- ============ EJERCICIOS ============ -->
+      <section id="view-dia" class="view">
+        <div class="day-picker" id="dayPicker"></div>
+        <div class="day-hero glass" id="dayHero"></div>
+        <div id="dayBlocks"></div>
+      </section>
+
+      <!-- ============ PROGRESO ============ -->
+      <section id="view-progreso" class="view">
+        <div class="pg-grid-main">
+          <div class="glass pg-card"><div class="eyebrow">Entrenamiento</div><h2>Sesiones</h2><div id="pgSesiones"></div></div>
+          <div class="glass pg-card"><div class="eyebrow">Doble progresión</div><h2>Cargas por ejercicio</h2><div id="pgCargas"></div></div>
+          <div class="glass pg-card wide"><div class="eyebrow">Recomposición</div><h2>Cintura y peso</h2><div id="pgMedidas"></div></div>
+          <div class="glass pg-card wide"><div class="eyebrow">Cada 3–4 semanas</div><h2>Fotos de progreso</h2><div id="pgFotos"></div></div>
+          <div class="glass pg-card wide"><div class="eyebrow">Tus datos</div><h2>Copia de seguridad</h2><div id="pgBackup"></div></div>
+        </div>
+      </section>
+
+      <!-- ============ EVIDENCIA ============ -->
+      <section id="view-evidencia" class="view">
+        <div class="method glass" id="method"></div>
+        <div class="filters" id="evFilters"></div>
+        <div class="evidence" id="evidence"></div>
+      </section>
+    </main>
+
+    <footer class="foot">Guía basada en evidencia y en la metodología de Jeff Nippard. Las figuras son ilustraciones propias de referencia. No reemplaza la valoración de un profesional de la salud.</footer>
+  </div>
+
+  <div class="resume-bar" id="resumeBar" hidden></div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <button class="icon-btn drawer-close" id="drawerClose" aria-label="Cerrar">✕</button>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/figures.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
