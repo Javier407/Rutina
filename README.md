@@ -3,7 +3,7 @@
 Interfaz oscura y roja para organizar la rutina de 5 días (16:00–18:00): Upper / Lower + Push / Pull / Legs. Prioriza deltoide lateral, dorsal, pecho superior y postura, y cada decisión está respaldada con estudios científicos.
 
 ## Cómo abrirla
-- **En línea:** https://javier407.github.io/rutina-estetica/
+- **En línea:** https://javier407.github.io/Rutina/
 - **En el computador:** doble clic en `index.html`.
 - **Como app en el celular:** abre la dirección en Chrome (Android) y toca *Instalar app*, o en Safari (iPhone) usa *Compartir → Agregar a inicio*. Funciona sin internet en el gym.
 
