@@ -16,6 +16,12 @@ Interfaz oscura y roja para organizar la rutina de 5 días (16:00–18:00): Uppe
 
 La voz anuncia cada ejercicio, avisa "quedan diez segundos" y pita 3-2-1. Se apaga con 🔊. La pantalla no se apaga durante la sesión.
 
+### Motivación 🔥
+Al terminar una serie, al cambiar de ejercicio y al finalizar el día suena un grito de motivación. En **Progreso → Motivación**:
+- Sube tus propios clips de audio (mp3/m4a/wav, menos de 3 MB) y elige cuándo suenan. Se guardan solo en tu dispositivo, nunca en GitHub.
+- Si no hay clip para ese momento, suena una frase de gimnasio con bocina de estadio.
+- Modos: clips + frases, solo clips, solo frases o apagado.
+
 ## Estructura
 ```
 rutina-estetica/
@@ -25,6 +31,7 @@ rutina-estetica/
     ├── data.js        # ← EDITA AQUÍ: estudios, días, bloques y ejercicios
     ├── store.js       # Fechas, registro de cargas, sesiones y medidas
     ├── voice.js       # Voz en español y sonidos
+    ├── motivation.js  # Gritos de motivación (clips propios + frases)
     ├── figures.js     # Motor y poses de las 49 animaciones de ejercicios
     ├── session.js     # Modo guiado "Iniciar día"
     ├── progress.js    # Pestaña Progreso (sesiones, cargas, medidas, fotos, copia)

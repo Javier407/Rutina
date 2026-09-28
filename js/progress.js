@@ -7,18 +7,7 @@ window.PROGRESO = (function () {
   const RED = "#ff2d46", WHITE = "#e7e7ea";
 
   // ---------- IndexedDB para fotos ----------
-  let dbp = null;
-  function db() {
-    if (dbp) return dbp;
-    dbp = new Promise((res, rej) => {
-      if (!("indexedDB" in window)) return rej(new Error("sin IndexedDB"));
-      const r = indexedDB.open("rutina", 1);
-      r.onupgradeneeded = () => r.result.createObjectStore("fotos", { keyPath: "id", autoIncrement: true });
-      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
-    });
-    return dbp;
-  }
-  const tx = async (mode, fn) => { const d = await db(); return new Promise((res, rej) => { const t = d.transaction("fotos", mode); const out = fn(t.objectStore("fotos")); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); };
+  const tx = (mode, fn) => R.idbTx("fotos", mode, fn);
   const allFotos = async () => { try { return await tx("readonly", (s) => s.getAll()); } catch { return []; } };
   const addFoto = (f) => tx("readwrite", (s) => s.add(f));
   const delFoto = (id) => tx("readwrite", (s) => s.delete(id));
@@ -153,7 +142,7 @@ window.PROGRESO = (function () {
         <label class="btn pg-file">⬆ Importar copia<input type="file" id="bkImport" accept="application/json,.json" hidden></label>
       </div>`;
     $("#bkExport").addEventListener("click", async () => {
-      const data = { app: "rutina-estetica", version: 1, exportado: new Date().toISOString(), local: {}, fotos: await allFotos() };
+      const data = { app: "rutina-estetica", version: 1, exportado: new Date().toISOString(), local: {}, fotos: await allFotos(), clips: (window.MOTIVA ? await MOTIVA.allClips() : []) };
       try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith("rutina.")) data.local[k] = localStorage.getItem(k); } } catch { /* */ }
       const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `rutina-copia-${R.dateKey()}.json`; a.click();
@@ -167,11 +156,12 @@ window.PROGRESO = (function () {
         if (!confirm("Esto reemplaza los datos de este dispositivo con los de la copia. ¿Continuar?")) return;
         Object.entries(data.local || {}).forEach(([k, v]) => R.store.set(k, v));
         for (const foto of data.fotos || []) { const { id, ...rest } = foto; await addFoto(rest); }
+        if (window.MOTIVA) for (const c of data.clips || []) { const { id, ...rest } = c; await MOTIVA.addClip(rest); }
         alert("Copia importada."); location.reload();
       } catch (e) { alert("No se pudo importar: " + e.message); }
     });
   }
 
-  function render() { renderSesiones(); renderCargas(); renderMedidas(); renderFotos(); renderBackup(); }
+  function render() { renderSesiones(); renderCargas(); renderMedidas(); renderFotos(); if (window.MOTIVA) MOTIVA.renderPanel($("#pgMotiva")); renderBackup(); }
   return { render, renderSesiones };
 })();

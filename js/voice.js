@@ -13,15 +13,21 @@ window.VOZ = (function () {
   }
   if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
-  function say(text) {
-    if (!on || !("speechSynthesis" in window)) return;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = voice ? voice.lang : "es-ES"; if (voice) u.voice = voice;
-      u.rate = 1.02; u.pitch = 1;
-      speechSynthesis.speak(u);
-    } catch { /* sin voz */ }
+  // Habla; con {queue:true} no interrumpe lo anterior. Devuelve una promesa que termina al acabar.
+  function say(text, opt = {}) {
+    if (!on || !("speechSynthesis" in window)) return Promise.resolve();
+    return new Promise((res) => {
+      try {
+        if (!opt.queue) speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = voice ? voice.lang : "es-ES"; if (voice) u.voice = voice;
+        u.rate = opt.hype ? 1.12 : 1.02; u.pitch = opt.hype ? 0.75 : 1; u.volume = 1;
+        const done = () => { clearTimeout(tm); res(); };
+        const tm = setTimeout(res, 1500 + text.length * 90);
+        u.onend = done; u.onerror = done;
+        speechSynthesis.speak(u);
+      } catch { res(); }
+    });
   }
 
   function audio() {
@@ -40,6 +46,16 @@ window.VOZ = (function () {
   }
   const tick = () => beep(660, 0.12, 0.2);
   const go = () => { beep(990, 0.18, 0.26); beep(1320, 0.3, 0.26, 0.2); if (navigator.vibrate) navigator.vibrate([180, 80, 260]); };
+  // Bocina de estadio sintetizada (sonido original)
+  function horn() {
+    if (!on) return; const c = audio(); if (!c) return;
+    [0, 0.32].forEach((w, k) => {
+      const t = c.currentTime + w, dur = k ? 0.55 : 0.26;
+      const g = c.createGain(); g.connect(c.destination);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.02); g.gain.setValueAtTime(0.16, t + dur - 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      [466, 587, 698].forEach((f) => { const o = c.createOscillator(); o.type = "sawtooth"; o.frequency.setValueAtTime(f * 0.97, t); o.frequency.linearRampToValueAtTime(f, t + 0.06); o.connect(g); o.start(t); o.stop(t + dur + 0.02); });
+    });
+  }
   const done = () => { [0, 0.16, 0.32, 0.5].forEach((w, i) => beep([784, 988, 1175, 1568][i], 0.2, 0.22, w)); };
 
   // Frases en español natural
@@ -52,6 +68,6 @@ window.VOZ = (function () {
     get on() { return on; },
     toggle() { on = !on; RUT.store.set(KEY, on ? "1" : "0"); if (on) { audio(); say("Voz activada"); } else if ("speechSynthesis" in window) speechSynthesis.cancel(); return on; },
     unlock() { audio(); },          // se llama con un toque del usuario (requisito de iOS)
-    say, beep, tick, go, done, restPhrase
+    say, beep, tick, go, done, horn, restPhrase, ctx: () => audio()
   };
 })();

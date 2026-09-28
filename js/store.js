@@ -130,7 +130,29 @@ window.RUT = (function () {
     return s + `</svg>`;
   }
 
+  // ---------- IndexedDB compartida (fotos y clips de motivación) ----------
+  let idbp = null;
+  function idb() {
+    if (idbp) return idbp;
+    idbp = new Promise((res, rej) => {
+      if (!("indexedDB" in window)) return rej(new Error("sin IndexedDB"));
+      const r = indexedDB.open("rutina", 2);
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        if (!d.objectStoreNames.contains("fotos")) d.createObjectStore("fotos", { keyPath: "id", autoIncrement: true });
+        if (!d.objectStoreNames.contains("clips")) d.createObjectStore("clips", { keyPath: "id", autoIncrement: true });
+      };
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    return idbp;
+  }
+  async function idbTx(storeName, mode, fn) {
+    const d = await idb();
+    return new Promise((res, rej) => { const t = d.transaction(storeName, mode); const out = fn(t.objectStore(storeName)); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); });
+  }
+
   return {
+    idb, idbTx,
     store, esc, toMin, clock, efectivo,
     dateKey, fromKey, fmtShort, fmtLong, fmtDay, weekDates, todayIdx, nowMin,
     parseRest, parseTime, repRange,

@@ -105,15 +105,22 @@ window.SESION = (function () {
     const next = st.i + 1;
     if (next >= all.length) return finish();
     const rest = R.parseRest(e.descanso);
+    const changing = all[next].ex !== sp.ex;
     st.i = next;
-    if (rest > 0) {
-      st.phase = "rest"; st.restTotal = rest; st.restEnd = Date.now() + rest * 1000; cues = {};
-      const changing = all[next].ex !== sp.ex;
-      V.say(V.restPhrase(rest) + (changing ? `. Luego: ${exList(d)[all[next].ex].e.nombre}.` : "."));
-    } else { st.phase = "work"; announceWork(); }
+    if (rest > 0) { st.phase = "rest"; st.restTotal = rest; st.restEnd = Date.now() + rest * 1000; cues = {}; }
+    else st.phase = "work";
     save(); render();
+    // Primero la motivación, luego la información del descanso o del siguiente ejercicio
+    const info = rest > 0 ? V.restPhrase(rest) + (changing ? `. Luego: ${exList(d)[all[next].ex].e.nombre}.` : ".") : null;
+    const hype = window.MOTIVA ? MOTIVA.play(changing ? "ejercicio" : "serie") : Promise.resolve();
+    const step = st.i;
+    hype.then(() => {
+      if (!st || st.i !== step) return;
+      if (info && st.phase === "rest") V.say(info, { queue: true });
+      else if (!info && st.phase === "work") announceWork();
+    });
   }
-  function endRest() { st.phase = "work"; st.restEnd = 0; save(); V.go(); announceWork(); render(); }
+  function endRest() { if (window.MOTIVA) MOTIVA.stop(); st.phase = "work"; st.restEnd = 0; save(); V.go(); announceWork(); render(); }
   function prev() { if (st.i > 0) { st.i--; st.phase = "work"; holdEnd = 0; save(); render(); } }
   function skipExercise() {
     const all = steps(dayOf(st.dayId)), cur = all[st.i].ex;
@@ -137,7 +144,9 @@ window.SESION = (function () {
     const dur = Math.round((Date.now() - st.startedAt) / 60000);
     R.saveSession({ fecha: st.fecha, dia: d.id, nombre: d.nombre, minutos: dur, series, volumen: Math.round(vol), prs });
     st.phase = "done"; st.summary = { dur, series, vol: Math.round(vol), prs };
-    save(); V.done(); setTimeout(() => V.say(`Sesión terminada. ${series} series en ${dur} minutos. Buen trabajo.`), 700);
+    save(); V.done();
+    const resumen = `Sesión terminada. ${series} series en ${dur} minutos.`;
+    setTimeout(() => { (window.MOTIVA ? MOTIVA.play("final") : Promise.resolve()).then(() => V.say(resumen, { queue: true })); }, 700);
     render();
   }
 

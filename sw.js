@@ -1,8 +1,8 @@
 // Service worker: la app funciona sin internet en el gym
-const VERSION = "rutina-v3";
+const VERSION = "rutina-v4";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "css/styles.css",
-  "js/data.js", "js/store.js", "js/voice.js", "js/figures.js", "js/session.js", "js/progress.js", "js/app.js",
+  "js/data.js", "js/store.js", "js/voice.js", "js/motivation.js", "js/figures.js", "js/session.js", "js/progress.js", "js/app.js",
   "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png"
 ];
 self.addEventListener("install", (e) => {
